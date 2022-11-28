@@ -24,9 +24,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/nats-io/nuid"
 	"strings"
 	"time"
+
+	"github.com/nats-io/nuid"
 
 	"github.com/topfreegames/pitaya/v2/acceptor"
 	"github.com/topfreegames/pitaya/v2/pipeline"

@@ -23,16 +23,16 @@ import (
 var app pitaya.Pitaya
 
 func configureBackend() {
-	// room := services.NewRoom(app)
-	// app.Register(room,
-	// 	component.WithName("room"),
-	// 	component.WithNameFunc(strings.ToLower),
-	// )
+	room := services.NewRoom(app)
+	app.Register(room,
+		component.WithName("room"),
+		component.WithNameFunc(strings.ToLower),
+	)
 
-	// app.RegisterRemote(room,
-	// 	component.WithName("room"),
-	// 	component.WithNameFunc(strings.ToLower),
-	// )
+	app.RegisterRemote(room,
+		component.WithName("room"),
+		component.WithNameFunc(strings.ToLower),
+	)
 }
 
 func configureFrontend(port int) {
@@ -62,23 +62,23 @@ func configureFrontend(port int) {
 		fmt.Printf("error adding route %s\n", err.Error())
 	}
 
-	err = app.SetDictionary(map[string]uint16{
-		"connector.getsessiondata": 1,
-		"connector.setsessiondata": 2,
-		"room.room.getsessiondata": 3,
-		"onMessage":                4,
-		"onMembers":                5,
-	})
+	// err = app.SetDictionary(map[string]uint16{
+	// 	"connector.getsessiondata": 1,
+	// 	"connector.setsessiondata": 2,
+	// 	"room.room.getsessiondata": 3,
+	// 	"onMessage":                4,
+	// 	"onMembers":                5,
+	// })
 
-	if err != nil {
-		fmt.Printf("error setting route dictionary %s\n", err.Error())
-	}
+	// if err != nil {
+	// 	fmt.Printf("error setting route dictionary %s\n", err.Error())
+	// }
 }
 
 func main() {
 	port := flag.Int("port", 3010, "the port to listen")
-	svType := flag.String("type", "connector", "the server type")
-	isFrontend := flag.Bool("frontend", true, "if server is frontend")
+	svType := flag.String("type", "room", "the server type")
+	isFrontend := flag.Bool("frontend", false, "if server is frontend")
 	rpcServerPort := flag.Int("rpcsvport", 3434, "the port that grpc server will listen")
 
 	flag.Parse()

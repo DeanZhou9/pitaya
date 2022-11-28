@@ -23,17 +23,23 @@ package cluster
 import (
 	"encoding/json"
 	"os"
+	"strconv"
 
+	"github.com/topfreegames/pitaya/v2/constants"
 	"github.com/topfreegames/pitaya/v2/logger"
 )
 
 // Server struct
 type Server struct {
-	ID       string            `json:"id"`
-	Type     string            `json:"type"`
-	Metadata map[string]string `json:"metadata"`
-	Frontend bool              `json:"frontend"`
-	Hostname string            `json:"hostname"`
+	ID         string            `json:"id"`
+	Type       string            `json:"type"`
+	Metadata   map[string]string `json:"metadata"`
+	Frontend   bool              `json:"frontend"`
+	Hostname   string            `json:"hostname"`
+	ServerType string            `json:"serverType"`
+	Host       string            `json:"host"`
+	Port       int               `json:"port"`
+	RichRPC    bool              `json:"richrpc"`
 }
 
 // NewServer ctor
@@ -46,12 +52,20 @@ func NewServer(id, serverType string, frontend bool, metadata ...map[string]stri
 	if len(metadata) > 0 {
 		d = metadata[0]
 	}
+	host := d[constants.GRPCHostKey]
+	strPort := d[constants.GRPCPortKey]
+	port, _ := strconv.Atoi(strPort)
+
 	return &Server{
-		ID:       id,
-		Type:     serverType,
-		Metadata: d,
-		Frontend: frontend,
-		Hostname: h,
+		ID:         id,
+		Type:       serverType,
+		Metadata:   d,
+		Frontend:   frontend,
+		Hostname:   h,
+		ServerType: serverType,
+		Host:       host,
+		Port:       port,
+		RichRPC:    true,
 	}
 }
 
