@@ -185,7 +185,7 @@ func (sd *zookeeperServiceDiscovery) connectToServer(event <-chan zk.Event) erro
 	for {
 		select {
 		case e := <-event:
-			logger.Log.Infof("zk event %+v", e)
+			logger.Log.Debugf("zk event %+v", e)
 			switch e.State {
 			case zk.State(zk.StateHasSession):
 				// ensure path exists in the server
