@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-zookeeper/zk"
+	"github.com/topfreegames/pitaya/v2/config"
 	"github.com/topfreegames/pitaya/v2/constants"
 	"github.com/topfreegames/pitaya/v2/logger"
 	"golang.org/x/exp/slices"
@@ -27,24 +28,27 @@ type zookeeperServiceDiscovery struct {
 	connTimeout     time.Duration
 	watchedTypes    []string
 	knowAllServer   bool
+	host            string
 }
 
 // NewZookeeperServiceDiscovery ctor
 func NewZookeeperServiceDiscovery(
-	config interface{},
+	config *config.ZookeeperServiceDiscoveryConfig,
 	server *Server) (ServiceDiscovery, error) {
+
 	sd := &zookeeperServiceDiscovery{
+		host:            config.Host,
 		serverMapByType: make(map[string]map[string]*Server),
 		server:          server,
 		listeners:       make([]SDListener, 0),
-		masterPath:      "/game",
-		serverPath:      "/game/servers",
-		typePath:        "/game/types",
+		masterPath:      config.MasterPath,
+		serverPath:      config.ServerPath,
+		typePath:        config.TypePath,
 		stopChan:        make(chan bool),
 		resetChan:       make(chan bool),
-		connTimeout:     time.Duration(time.Second * 10),
+		connTimeout:     time.Duration(time.Second * time.Duration(config.ConnTimeout)),
 		watchedTypes:    []string{},
-		knowAllServer:   false,
+		knowAllServer:   config.KnowAllServer,
 	}
 
 	// append self to server list
@@ -58,7 +62,7 @@ func NewZookeeperServiceDiscovery(
 func (sd *zookeeperServiceDiscovery) Init() error {
 	logger.Log.Info("zookeeper Init")
 
-	conn, event, err := zk.Connect([]string{"127.0.0.1"}, time.Second*10)
+	conn, event, err := zk.Connect([]string{sd.host}, sd.connTimeout)
 	if err != nil {
 		return err
 	}
@@ -91,18 +95,21 @@ func (sd *zookeeperServiceDiscovery) Init() error {
 }
 
 func (sd *zookeeperServiceDiscovery) AfterInit() {
-	logger.Log.Info("zookeeper AfterInit")
+	logger.Log.Info("[Zookeeper] begin AfterInit")
 	sd.registerSelf()
+	logger.Log.Info("[Zookeeper] finish AfterInit")
 }
 
 func (sd *zookeeperServiceDiscovery) BeforeShutdown() {
-	logger.Log.Info("zookeeper BeforeShutdown")
+	logger.Log.Info("[Zookeeper] begin BeforeShutdown")
 	close(sd.stopChan)
+	logger.Log.Info("[Zookeeper] finish BeforeShutdown")
 }
 
 func (sd *zookeeperServiceDiscovery) Shutdown() error {
-	logger.Log.Info("zookeeper Shutdown")
+	logger.Log.Info("[Zookeeper] begin Shutdown")
 	sd.conn.Close()
+	logger.Log.Info("[Zookeeper] finish Shutdown")
 
 	return nil
 }

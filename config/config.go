@@ -389,6 +389,38 @@ func NewEtcdServiceDiscoveryConfig(config *Config) *EtcdServiceDiscoveryConfig {
 	return conf
 }
 
+// ZookeeperServiceDiscoveryConfig zookeeper service discovery default config
+type ZookeeperServiceDiscoveryConfig struct {
+	Host          string
+	MasterPath    string
+	ServerPath    string
+	TypePath      string
+	KnowAllServer bool
+	ConnTimeout   int // connection time out by seconds
+}
+
+// NewDefaultZookeeperServiceDiscoveryConfig zookeeper default service discovery default config
+//  @return *ZookeeperServiceDiscoveryConfig
+func NewDefaultZookeeperServiceDiscoveryConfig() *ZookeeperServiceDiscoveryConfig {
+	return &ZookeeperServiceDiscoveryConfig{
+		Host:          "localhost:2181",
+		MasterPath:    "/game",
+		ServerPath:    "/game/servers",
+		TypePath:      "/game/types",
+		KnowAllServer: false,
+		ConnTimeout:   10,
+	}
+}
+
+// NewZookeeperServiceDiscoveryConfig new zookeeper service discovery default config
+func NewZookeeperServiceDiscoveryConfig(config *Config) *ZookeeperServiceDiscoveryConfig {
+	conf := NewDefaultZookeeperServiceDiscoveryConfig()
+	if err := config.UnmarshalKey("pitaya.cluster.sd.zookeeper", &conf); err != nil {
+		panic(err)
+	}
+	return conf
+}
+
 // NewDefaultCustomMetricsSpec returns an empty *CustomMetricsSpec
 func NewDefaultCustomMetricsSpec() *models.CustomMetricsSpec {
 	return &models.CustomMetricsSpec{
